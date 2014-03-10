@@ -16,6 +16,7 @@ subtest 'simple' => sub {
     my $e = $@;
     like $e->to_string, qr{invalid request at t/simple.t line};
     note explain $e->to_string;
+    is $e->first_message, 'invalid request';
 };
 
 subtest 'chain message' => sub {
@@ -30,7 +31,7 @@ subtest 'chain message' => sub {
         }
     } 'Exception::Chain', 'throws ok';
     my $e = $@;
-    like $e->to_string, qr{invalid request at t/simple\.t line \d+, operation denied at t/simple\.t line \d+};
+    like $e->to_string, qr{\Ainvalid request at t/simple\.t line \d+\. operation denied at t/simple\.t line \d+\.\z};
     note explain $e->to_string;
 };
 
@@ -44,6 +45,7 @@ subtest 'match single' => sub {
     my $e = $@;
     is $e->match('invalid request'), 1, 'match exception is ok';
     is $e->match('not match'),       0, 'match exception is ok';
+    is $e->first_message, 'msg is invalid parameter';
 };
 
 subtest 'match plural' => sub {
