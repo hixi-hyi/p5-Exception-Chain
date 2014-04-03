@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Class::Accessor::Lite (
-    ro => [qw/ delivery /],
+    ro => [qw/ delivery is_delivery_duplicated duplicated_trace /],
 );
 use Time::Piece qw(localtime);
 use Time::HiRes qw(gettimeofday tv_interval);
@@ -16,11 +16,23 @@ sub new {
     my ($class, %args) = @_;
 
     my $self = bless {
-        tags     => {},
-        stack    => [],
-        message  => undef,
-        delivery => undef,
+        tags                   => {},
+        stack                  => [],
+        message                => undef,
+        delivery               => undef,
+        is_delivery_duplicated => 0,
+        duplicated_trace       => [],
     }, $class;
+}
+
+sub _get_external_caller {
+    my $self = shift;
+    my $i = 0;
+    while (my @caller = caller(++$i)) {
+        unless ($caller[0] =~ /^Exception::Chain/) {
+            return @caller;
+        }
+    }
 }
 
 sub _build_arg {
@@ -101,14 +113,7 @@ sub first_message {
 sub logging {
     my ($self, $args) = @_;
 
-    my $i = 0;
-    my ($pkg, $file, $line);
-    while (my @caller = caller(++$i)) {
-        unless ($caller[0] =~ /^Exception::Chain/) {
-            ($pkg, $file, $line) = @caller;
-            last;
-        }
-    }
+    my ($pkg, $file, $line) = $self->_get_external_caller;
 
     if (%{$args}) {
         if (my $tags = $args->{tag}) {
@@ -120,15 +125,23 @@ sub logging {
         if (my $message = $args->{message}) {
             push @{$self->{stack}}, "$message at $file line $line.";
         }
-        if ( ( my $delivery = $args->{delivery} ) && ( not defined $self->delivery ) ) {
-            $self->{delivery} = $delivery;
+        if (my $delivery = $args->{delivery}) {
+            if ($self->delivery) {
+                unless ($self->is_delivery_duplicated) {
+                    $self->{is_delivery_duplicated} = 1;
+                    push @{$self->{duplicated_trace}}, $self->{stack}->[0];
+                }
+                push @{$self->{duplicated_trace}}, "$file line $line." ;
+            }
+            else {
+                $self->{delivery} = $delivery;
+            }
         }
     }
     else {
         push @{$self->{stack}}, "at $file line $line.";
     }
 }
-
 
 1;
 __END__
@@ -227,16 +240,25 @@ store a following value.
     )
 
 =head2 to_string
-return chained log.
+chained log.
 
 =head2 first_message
-return first message.
+first message.
 
 =head2 match(@tags)
 matching stored tag.
 
 =head2 delivery
-return delivered object. (or scalar object)
+delivered object. (or scalar object)
+
+=head2 is_delivery_duplicated
+(it's development tool)
+if delivery was duplicated, 1;
+
+=head2 duplicated_trace
+(it's development tool)
+description of the occured file and line.
+
 
 =head1 LICENSE
 

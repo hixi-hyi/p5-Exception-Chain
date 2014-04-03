@@ -90,16 +90,26 @@ store a following value.
     )
 
 ## to\_string
-return chained log.
+chained log.
 
 ## first\_message
-return first message.
+first message.
 
 ## match(@tags)
 matching stored tag.
 
 ## delivery
-return delivered object. (or scalar object)
+delivered object. (or scalar object)
+
+## is\_delivery\_duplicated
+(it's development tool)
+if delivery was duplicated, 1;
+
+## duplicated\_trace
+(it's development tool)
+description of the occured file and line.
+
+
 
 # LICENSE
 

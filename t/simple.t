@@ -128,6 +128,9 @@ subtest 'not override object' => sub {
     my $e = $@;
     is $e->delivery->{code}, 500;
     is $e->delivery->{msg},  'internal server error';
+    is $e->is_delivery_duplicated, 1;
+    is scalar @{$e->duplicated_trace}, 2;
+    note explain $e->duplicated_trace;
 };
 
 subtest 'delivery on the occasion of chain' => sub {
