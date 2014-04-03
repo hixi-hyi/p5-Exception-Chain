@@ -98,4 +98,67 @@ subtest 'chain tag' => sub {
     is $e->match('internal server error'), 1, 'match exception is ok';
 };
 
+subtest 'throw object' => sub {
+    throws_ok {
+        Exception::Chain->throw(
+            message  => 'dbname=user is connection failed',
+            delivery => My::Response->new(500, 'internal server error'),
+        );
+    } 'Exception::Chain', 'throws ok';
+    my $e = $@;
+    is $e->delivery->{code}, 500;
+    is $e->delivery->{msg},  'internal server error';
+};
+
+subtest 'not override object' => sub {
+    throws_ok {
+        eval {
+            Exception::Chain->throw(
+                message  => 'dbname=user is connection failed',
+                delivery => My::Response->new(500, 'internal server error'),
+            );
+        };
+        if (my $e = $@) {
+            Exception::Chain->throw(
+                error    => $e,
+                delivery => My::Response->new(400, 'override'),
+            );
+        }
+    } 'Exception::Chain', 'throws ok';
+    my $e = $@;
+    is $e->delivery->{code}, 500;
+    is $e->delivery->{msg},  'internal server error';
+};
+
+subtest 'delivery on the occasion of chain' => sub {
+    throws_ok {
+        eval {
+            Exception::Chain->throw(
+                message  => 'dbname=user is connection failed',
+            );
+        };
+        if (my $e = $@) {
+            Exception::Chain->throw(
+                error    => $e,
+                delivery => My::Response->new(500, 'internal server error'),
+            );
+        }
+    } 'Exception::Chain', 'throws ok';
+    my $e = $@;
+    is $e->delivery->{code}, 500;
+    is $e->delivery->{msg},  'internal server error';
+};
+
 done_testing;
+
+package
+    My::Response;
+sub new {
+    my ($class, $code, $msg) = @_;
+    bless {
+        code => $code,
+        msg  => $msg,
+    }, $class;
+}
+
+1;

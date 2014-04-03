@@ -7,7 +7,7 @@ Exception::Chain - It's chained exception module
     use Exception::Chain;
 
     eval {
-        process;
+        process($params);
     };
     if (my $e = $@) {
         if ($e->match('critical')) {
@@ -17,37 +17,41 @@ Exception::Chain - It's chained exception module
         if ($e->match('critical', 'internal server error')) { # or
             send_email($e->to_string);
         }
-        if ($e->match('connection failed')) {
-            retry;
+
+        if (my $error_response = $e->delivery) {
+            return $error_response;
+        }
+        else {
+            return HTTP::Response->(500, 'unknown error');
+        }
+    }
+
+    sub process {
+        my ($params) = @_;
+        eval {
+            get_user($params->{user_id});
+        };
+        if (my $e = $@) {
+            Exception::Chain->throw(
+                error    => $e,
+                tag      => 'internal server error',
+                message  => sprintf('params : %s', $params->as_string),
+                delivery => HTTP::Response->(500, 'internal server error'),
+            );
         }
     }
 
     sub get_user {
+        my ($user_id) = @_;
         eval {
             # die 'can not connect server',
         };
         if (my $e = $@) {
             Exception::Chain->throw(
-                tag     => ['connection failed', 'critical'],
-                message => 'dbname=user is connection failed',
-                error   => $e,
+                tag      => 'critical',
+                message  => 'database error',
+                error    => $e,
             );
-        }
-    }
-    sub process {
-        eval {
-            get_user();
-        };
-        if (my $e = $@) {
-            Exception::Chain->throw(
-                tag     => 'internal server error',
-                message => sprintf('request_id : %s', $params->{request_id}),
-                error   => $e,
-            );
-            # $e->rethrow(
-            #    tag     => 'internal server error',
-            #    message => sprintf('request_id : %s', $params->{request_id}),
-            # );
         }
     }
 
@@ -58,7 +62,12 @@ Exception::Chain is chained exception module
 # METHODS
 
 ## throw(%info)
-store tag ($info{tag}) and store message ($info{message}).
+store a following value.
+=over
+=item tag ($info{tag})
+=item message ($info{message})
+=item delivery ($info{delivery}). it's stored only once.
+=back
 
     throw($e); # Exception::Chain instance or message
     throw(
@@ -74,17 +83,23 @@ store tag ($info{tag}) and store message ($info{message}).
         message => 'connection failed',
         error   => $@
     )
-
-## rethrow(%info)
-store tag ($info{tag}) and add message ($info{message});
+    throw(
+        tag     => ['critical', 'database error'],
+        message => 'connection failed',
+        delivery => HTTP::Response->new( 500, 'internal server error' ),
+    )
 
 ## to\_string
 return chained log.
 
-
+## first\_message
+return first message.
 
 ## match(@tags)
-matching stored tag
+matching stored tag.
+
+## delivery
+return delivered object. (or scalar object)
 
 # LICENSE
 

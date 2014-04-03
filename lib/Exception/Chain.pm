@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Class::Accessor::Lite (
-    ro => [qw/ id message /],
+    ro => [qw/ delivery /],
 );
 use Time::Piece qw(localtime);
 use Time::HiRes qw(gettimeofday tv_interval);
@@ -16,9 +16,10 @@ sub new {
     my ($class, %args) = @_;
 
     my $self = bless {
-        tags    => {},
-        stack   => [],
-        message => undef,
+        tags     => {},
+        stack    => [],
+        message  => undef,
+        delivery => undef,
     }, $class;
 }
 
@@ -41,15 +42,10 @@ sub _build_arg {
         my %data = @info;
         my $ret = {};
 
-        if ($data{tag}) {
-            $ret->{tag} = $data{tag};
+        for my $name (qw/tag message error delivery/) {
+            $ret->{$name} = $data{$name};
         }
-        if ($data{message}) {
-            $ret->{message} = $data{message};
-        }
-        if ($data{error}) {
-            $ret->{error} = $data{error};
-        }
+
         return $ret;
     }
 }
@@ -67,7 +63,7 @@ sub throw {
     my $self;
     if (not defined $builded_args->{error}) {
         $self = $class->new;
-        $self->{message} = $builded_args->{message};
+        $self->{message}  = $builded_args->{message};
     }
     elsif ($class->_is_my_instance($builded_args->{error})) {
         $self = delete $builded_args->{error};
@@ -124,6 +120,9 @@ sub logging {
         if (my $message = $args->{message}) {
             push @{$self->{stack}}, "$message at $file line $line.";
         }
+        if ( ( my $delivery = $args->{delivery} ) && ( not defined $self->delivery ) ) {
+            $self->{delivery} = $delivery;
+        }
     }
     else {
         push @{$self->{stack}}, "at $file line $line.";
@@ -145,7 +144,7 @@ Exception::Chain - It's chained exception module
     use Exception::Chain;
 
     eval {
-        process;
+        process($params);
     };
     if (my $e = $@) {
         if ($e->match('critical')) {
@@ -155,37 +154,41 @@ Exception::Chain - It's chained exception module
         if ($e->match('critical', 'internal server error')) { # or
             send_email($e->to_string);
         }
-        if ($e->match('connection failed')) {
-            retry;
+
+        if (my $error_response = $e->delivery) {
+            return $error_response;
+        }
+        else {
+            return HTTP::Response->(500, 'unknown error');
+        }
+    }
+
+    sub process {
+        my ($params) = @_;
+        eval {
+            get_user($params->{user_id});
+        };
+        if (my $e = $@) {
+            Exception::Chain->throw(
+                error    => $e,
+                tag      => 'internal server error',
+                message  => sprintf('params : %s', $params->as_string),
+                delivery => HTTP::Response->(500, 'internal server error'),
+            );
         }
     }
 
     sub get_user {
+        my ($user_id) = @_;
         eval {
             # die 'can not connect server',
         };
         if (my $e = $@) {
             Exception::Chain->throw(
-                tag     => ['connection failed', 'critical'],
-                message => 'dbname=user is connection failed',
-                error   => $e,
+                tag      => 'critical',
+                message  => 'database error',
+                error    => $e,
             );
-        }
-    }
-    sub process {
-        eval {
-            get_user();
-        };
-        if (my $e = $@) {
-            Exception::Chain->throw(
-                tag     => 'internal server error',
-                message => sprintf('request_id : %s', $params->{request_id}),
-                error   => $e,
-            );
-            # $e->rethrow(
-            #    tag     => 'internal server error',
-            #    message => sprintf('request_id : %s', $params->{request_id}),
-            # );
         }
     }
 
@@ -196,7 +199,12 @@ Exception::Chain is chained exception module
 =head1 METHODS
 
 =head2 throw(%info)
-store tag ($info{tag}) and store message ($info{message}).
+store a following value.
+=over
+=item tag ($info{tag})
+=item message ($info{message})
+=item delivery ($info{delivery}). it's stored only once.
+=back
 
     throw($e); # Exception::Chain instance or message
     throw(
@@ -212,16 +220,23 @@ store tag ($info{tag}) and store message ($info{message}).
         message => 'connection failed',
         error   => $@
     )
-
-=head2 rethrow(%info)
-store tag ($info{tag}) and add message ($info{message});
+    throw(
+        tag     => ['critical', 'database error'],
+        message => 'connection failed',
+        delivery => HTTP::Response->new( 500, 'internal server error' ),
+    )
 
 =head2 to_string
 return chained log.
 
+=head2 first_message
+return first message.
 
 =head2 match(@tags)
-matching stored tag
+matching stored tag.
+
+=head2 delivery
+return delivered object. (or scalar object)
 
 =head1 LICENSE
 
