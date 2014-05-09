@@ -59,17 +59,21 @@ subtest 'auto complete instance with message' => sub {
 subtest 'no auto complete instance with message' => sub {
     throws_ok {
         eval {
-            die 'invalid request';
+            die 'connection failed';
         };
         if (my $e = $@) {
             Exception::Chain->throw(
-                message => 'invalid',
                 error   => $e,
+                tag     => ['internal_server_error'],
+                message => 'internal server error',
+                delivery => { code => 500 },
             );
         }
     } 'Exception::Chain', 'throws ok';
     my $e = $@;
-    like $e->to_string, qr{\Ainvalid request at t/auto_complete\.t line \d+\. invalid at t/auto_complete\.t line \d+\.\z};
+    like $e->to_string, qr{\Aconnection failed at t/auto_complete\.t line \d+\. internal server error at t/auto_complete\.t line \d+\.\z};
+    is $e->match('internal_server_error'), 1;
+    is_deeply $e->delivery, { code => 500 };
     note explain $e->to_string;
 };
 

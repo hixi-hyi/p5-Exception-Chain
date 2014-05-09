@@ -83,7 +83,7 @@ sub throw {
     else {
         $self = $class->new;
         push @{$self->{stack}}, $builded_args->{error};
-        $self->rethrow($builded_args->{message});
+        $self->rethrow(%{$builded_args});
     }
     $self->logging($builded_args);
     die $self;
