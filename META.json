@@ -52,6 +52,9 @@
       },
       "test" : {
          "requires" : {
+            "Test::Deep" : "0",
+            "Test::Exception" : "0",
+            "Test::Flatten" : "0",
             "Test::More" : "0.98"
          }
       }
@@ -68,5 +71,9 @@
          "web" : "https://github.com/hixi-hyi/p5-Exception-Chain"
       }
    },
-   "version" : "0.02"
+   "version" : "0.03",
+   "x_contributors" : [
+      "Syohei YOSHIDA <syohex@gmail.com>",
+      "Hiroyoshi HOUCHI <info@hixi-hyi.com>"
+   ]
 }

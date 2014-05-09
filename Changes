@@ -2,6 +2,10 @@ Revision history for Perl extension Exception-Chain
 
 {{$NEXT}}
 
+0.03 2014-05-09T10:15:21Z
+    - add depend modules
+    - fix bug (initialize process)
+
 0.02 2014-04-15T11:12:10Z
     - add depend modules
 

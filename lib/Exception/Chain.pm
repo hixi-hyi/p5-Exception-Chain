@@ -9,7 +9,7 @@ use Class::Accessor::Lite (
 use Time::Piece qw(localtime);
 use Time::HiRes qw(gettimeofday tv_interval);
 
-our $VERSION = "0.02";
+our $VERSION = "0.03";
 
 # class method
 sub new {
