@@ -8,6 +8,7 @@ use Class::Accessor::Lite (
 );
 use Time::Piece qw(localtime);
 use Time::HiRes qw(gettimeofday tv_interval);
+use Data::Dumper;
 
 our $VERSION = "0.03";
 
@@ -26,7 +27,7 @@ sub new {
 }
 
 sub _get_external_caller {
-    my $self = shift;
+    my $class = shift;
     my $i = 0;
     while (my @caller = caller(++$i)) {
         unless ($caller[0] =~ /^Exception::Chain/) {
@@ -47,14 +48,15 @@ sub _build_arg {
             return { error => $info[0] };
         }
         else {
-            return { message => $info[0] };
+            return { message => $class->dumper($info[0]) };
         }
     }
     else {
         my %data = @info;
         my $ret = {};
 
-        for my $name (qw/tag message error delivery/) {
+        $ret->{message} = $class->dumper($data{message});
+        for my $name (qw/tag error delivery/) {
             $ret->{$name} = $data{$name};
         }
 
@@ -65,6 +67,17 @@ sub _build_arg {
 sub _is_my_instance {
     my ($class, $instance) = @_;
     ($instance && ref $instance eq 'Exception::Chain') ? 1: 0;
+}
+
+sub dumper {
+    my ($self, $value) = @_;
+    if ( defined $value && ref($value) ) {
+        local $Data::Dumper::Terse = 1;
+        local $Data::Dumper::Indent = 0;
+        local $Data::Dumper::Sortkeys = 1;
+        return Data::Dumper::Dumper($value);
+    }
+    return $value;
 }
 
 # instance method
