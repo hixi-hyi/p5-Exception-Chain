@@ -14,9 +14,33 @@ subtest 'simple' => sub {
         );
     } 'Exception::Chain', 'throws ok';
     my $e = $@;
-    like $e->to_string, qr{invalid request at t/simple.t line};
+    like $e->to_string, qr{invalid request at t.simple.t line};
     note explain $e->to_string;
     is $e->first_message, 'invalid request';
+};
+
+subtest 'dumped hash' => sub {
+    throws_ok {
+        Exception::Chain->throw(
+            message => { error_code => 1 },
+        );
+    } 'Exception::Chain', 'throws ok';
+    my $e = $@;
+    like $e->to_string, qr|{'error_code' => 1} at t.simple\.t line|;
+    note explain $e->to_string;
+    is $e->first_message, "{'error_code' => 1}";
+};
+
+subtest 'dumped array' => sub {
+    throws_ok {
+        Exception::Chain->throw(
+            message => [ 1, 2 ],
+        );
+    } 'Exception::Chain', 'throws ok';
+    my $e = $@;
+    like $e->to_string, qr|\[1,2\] at t.simple\.t line|;
+    note explain $e->to_string;
+    is $e->first_message, "[1,2]";
 };
 
 subtest 'chain message' => sub {
@@ -31,7 +55,7 @@ subtest 'chain message' => sub {
         }
     } 'Exception::Chain', 'throws ok';
     my $e = $@;
-    like $e->to_string, qr{\Ainvalid request at t/simple\.t line \d+\. operation denied at t/simple\.t line \d+\.\z};
+    like $e->to_string, qr{\Ainvalid request at t.simple\.t line \d+\. operation denied at t.simple\.t line \d+\.\z};
     note explain $e->to_string;
 };
 
