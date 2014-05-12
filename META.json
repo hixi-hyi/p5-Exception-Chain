@@ -45,6 +45,7 @@
       "runtime" : {
          "requires" : {
             "Class::Accessor::Lite" : "0",
+            "Data::Dumper" : "0",
             "Time::HiRes" : "0",
             "Time::Piece" : "0",
             "perl" : "5.008005"
@@ -71,7 +72,7 @@
          "web" : "https://github.com/hixi-hyi/p5-Exception-Chain"
       }
    },
-   "version" : "0.03",
+   "version" : "0.04",
    "x_contributors" : [
       "Syohei YOSHIDA <syohex@gmail.com>",
       "Hiroyoshi HOUCHI <info@hixi-hyi.com>"

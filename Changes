@@ -2,6 +2,9 @@ Revision history for Perl extension Exception-Chain
 
 {{$NEXT}}
 
+0.04 2014-05-12T03:22:08Z
+    - auto dumper in message params
+
 0.03 2014-05-09T10:15:21Z
     - add depend modules
     - fix bug (initialize process)
