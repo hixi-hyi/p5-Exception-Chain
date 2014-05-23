@@ -110,7 +110,7 @@ sub rethrow {
 sub to_string {
     my $self = shift;
     my $string = join( ' ', @{$self->{stack}} );
-    $string =~ s/\n//gc;
+    $string =~ s/\n//g;
     return $string;
 }
 
