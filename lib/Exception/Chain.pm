@@ -38,7 +38,6 @@ sub _get_external_caller {
 
 sub _build_arg {
     my ($class, @info) = @_;
-    chomp $_ for @info;
 
     if (scalar @info == 0) {
         return { };
@@ -110,7 +109,9 @@ sub rethrow {
 
 sub to_string {
     my $self = shift;
-    join( ' ', @{$self->{stack}} );
+    my $string = join( ' ', @{$self->{stack}} );
+    $string =~ s/\n//gc;
+    return $string;
 }
 
 sub match {
