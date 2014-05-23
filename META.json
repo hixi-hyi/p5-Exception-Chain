@@ -72,7 +72,7 @@
          "web" : "https://github.com/hixi-hyi/p5-Exception-Chain"
       }
    },
-   "version" : "0.05",
+   "version" : "0.06",
    "x_contributors" : [
       "Syohei YOSHIDA <syohex@gmail.com>",
       "Hiroyoshi HOUCHI <info@hixi-hyi.com>"
