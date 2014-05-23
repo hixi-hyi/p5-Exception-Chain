@@ -2,6 +2,9 @@ Revision history for Perl extension Exception-Chain
 
 {{$NEXT}}
 
+0.05 2014-05-23T11:00:21Z
+    - fix bug to remove new line character
+
 0.04 2014-05-12T03:22:08Z
     - auto dumper in message params
 
