@@ -2,6 +2,9 @@ Revision history for Perl extension Exception-Chain
 
 {{$NEXT}}
 
+0.07 2014-06-05T12:05:29Z
+    - add variable $Exception::Chain::SkipLevel
+
 0.06 2014-05-23T11:03:32Z
     - fix using s///gc to s///g ...
 

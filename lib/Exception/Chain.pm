@@ -10,7 +10,7 @@ use Time::Piece qw(localtime);
 use Time::HiRes qw(gettimeofday tv_interval);
 use Data::Dumper;
 
-our $VERSION   = "0.06";
+our $VERSION   = "0.07";
 our $SkipLevel = 0;
 
 # class method
