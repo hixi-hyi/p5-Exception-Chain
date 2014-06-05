@@ -11,7 +11,7 @@ use Time::HiRes qw(gettimeofday tv_interval);
 use Data::Dumper;
 
 our $VERSION   = "0.07";
-our $SkipLevel = 0;
+our $SkipDepth = 0;
 
 # class method
 sub new {
@@ -32,7 +32,7 @@ sub _get_external_caller {
     my $i = 0;
     while (my @caller = caller(++$i)) {
         unless ($caller[0] =~ /^Exception::Chain/) {
-            my $level = $i + $SkipLevel;
+            my $level = $i + $SkipDepth;
             @caller = caller($level);
             return @caller;
         }
@@ -277,7 +277,7 @@ if delivery was duplicated, 1;
 description of the occured file and line.
 
 =head1 GLOBAL VARIABLES
-=head2 $Exception::Chain::SkipLevel
+=head2 $Exception::Chain::SkipDepth
 
 =head1 LICENSE
 

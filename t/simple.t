@@ -188,7 +188,7 @@ subtest 'skip level' => sub {
     };
 
     subtest 'use ' => sub {
-        local $Exception::Chain::SkipLevel += 1;
+        local $Exception::Chain::SkipDepth += 1;
         throws_ok {
             MyException->throw;
         } 'Exception::Chain', 'throws ok';
