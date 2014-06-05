@@ -109,7 +109,8 @@ if delivery was duplicated, 1;
 (it's development tool)
 description of the occured file and line.
 
-
+# GLOBAL VARIABLES
+=head2 $Exception::Chain::SkipLevel
 
 # LICENSE
 

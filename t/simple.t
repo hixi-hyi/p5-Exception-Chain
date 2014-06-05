@@ -1,11 +1,13 @@
 #!/usr/bin/env perl -w
 use strict;
+use lib 't/lib';
 use Test::More;
 use Test::Deep;
 use Test::Exception;
 use Test::Flatten;
 
 use Exception::Chain;
+use MyException;
 
 subtest 'simple' => sub {
     throws_ok {
@@ -176,7 +178,27 @@ subtest 'delivery on the occasion of chain' => sub {
     is $e->delivery->{msg},  'internal server error';
 };
 
+subtest 'skip level' => sub {
+    subtest 'not use' => sub {
+        throws_ok {
+            MyException->throw;
+        } 'Exception::Chain', 'throws ok';
+        my $e = $@;
+        like $e->to_string, qr{t/lib/MyException};
+    };
+
+    subtest 'use ' => sub {
+        local $Exception::Chain::SkipLevel += 1;
+        throws_ok {
+            MyException->throw;
+        } 'Exception::Chain', 'throws ok';
+        my $e = $@;
+        like $e->to_string, qr{t/simple};
+    };
+};
+
 done_testing;
+
 
 package
     My::Response;
