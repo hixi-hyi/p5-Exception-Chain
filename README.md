@@ -62,12 +62,12 @@ Exception::Chain is chained exception module
 # METHODS
 
 ## throw(%info)
+
 store a following value.
-=over
-=item tag ($info{tag})
-=item message ($info{message})
-=item delivery ($info{delivery}). it's stored only once.
-=back
+
+- tag ($info{tag})
+- message ($info{message})
+- delivery ($info{delivery}). it's stored only once.
 
     throw($e); # Exception::Chain instance or message
     throw(
@@ -90,27 +90,34 @@ store a following value.
     )
 
 ## to\_string
+
 chained log.
 
 ## first\_message
+
 first message.
 
 ## match(@tags)
+
 matching stored tag.
 
 ## delivery
+
 delivered object. (or scalar object)
 
 ## is\_delivery\_duplicated
+
 (it's development tool)
 if delivery was duplicated, 1;
 
 ## duplicated\_trace
+
 (it's development tool)
 description of the occured file and line.
 
 # GLOBAL VARIABLES
-=head2 $Exception::Chain::SkipDepth
+
+$Exception::Chain::SkipDepth
 
 # LICENSE
 
