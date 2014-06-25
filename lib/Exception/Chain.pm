@@ -262,6 +262,10 @@ store a following value.
         delivery => HTTP::Response->new( 500, 'internal server error' ),
     )
 
+=head2 rethrow
+
+rethrow exception object.
+
 =head2 to_string
 
 chained log.

@@ -89,6 +89,10 @@ store a following value.
         delivery => HTTP::Response->new( 500, 'internal server error' ),
     )
 
+## rethrow
+
+rethrow exception object.
+
 ## to\_string
 
 chained log.
