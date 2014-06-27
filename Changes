@@ -2,6 +2,10 @@ Revision history for Perl extension Exception-Chain
 
 {{$NEXT}}
 
+0.09 2014-06-27T10:34:21Z
+    - overload string conversion
+    - fix pod (thanks addsict)
+
 0.08 2014-06-05T12:25:00Z
     - change name $Exception::Chain::SkipLevel to $Exception::Chain::SkipDepth
 
