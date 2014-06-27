@@ -17,6 +17,7 @@ subtest 'simple' => sub {
     } 'Exception::Chain', 'throws ok';
     my $e = $@;
     like $e->to_string, qr{invalid request at t.simple.t line};
+    like "$e", qr{invalid request at t.simple.t line};
     note explain $e->to_string;
     is $e->first_message, 'invalid request';
 };

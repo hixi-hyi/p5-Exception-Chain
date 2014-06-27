@@ -2,6 +2,8 @@ package Exception::Chain;
 use 5.008005;
 use strict;
 use warnings;
+use overload
+    "\"\"" => \&to_string;
 
 use Class::Accessor::Lite (
     ro => [qw/ delivery is_delivery_duplicated duplicated_trace /],
