@@ -13,7 +13,7 @@ use Time::HiRes qw(gettimeofday tv_interval);
 use Data::Dumper;
 use Data::Util qw(is_instance);
 
-our $VERSION   = "0.09";
+our $VERSION   = "0.10";
 our $SkipDepth = 0;
 
 # class method

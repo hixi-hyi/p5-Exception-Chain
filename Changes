@@ -2,6 +2,11 @@ Revision history for Perl extension Exception-Chain
 
 {{$NEXT}}
 
+0.10 2014-07-01T12:49:11Z
+    - add method [add_message]
+    - bugfix [instance decision logic]
+    - bugfix [overload string conversion]
+
 0.09 2014-06-27T10:34:21Z
     - overload string conversion
     - fix pod (thanks addsict)
