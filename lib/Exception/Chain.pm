@@ -129,6 +129,11 @@ sub first_message {
     return $self->{message};
 }
 
+sub add_message {
+    my ($self, $message) = @_;
+    $self->logging($self->_build_arg($message));
+}
+
 sub logging {
     my ($self, $args) = @_;
 
