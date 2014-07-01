@@ -3,6 +3,7 @@ requires 'Class::Accessor::Lite';
 requires 'Time::Piece';
 requires 'Time::HiRes';
 requires 'Data::Dumper';
+requires 'Data::Util';
 
 on 'test' => sub {
     requires 'Test::More', '0.98';

@@ -11,6 +11,7 @@ use Class::Accessor::Lite (
 use Time::Piece qw(localtime);
 use Time::HiRes qw(gettimeofday tv_interval);
 use Data::Dumper;
+use Data::Util qw(is_instance);
 
 our $VERSION   = "0.09";
 our $SkipDepth = 0;
@@ -70,7 +71,7 @@ sub _build_arg {
 
 sub _is_my_instance {
     my ($class, $instance) = @_;
-    ($instance && ref $instance eq 'Exception::Chain') ? 1: 0;
+    is_instance($instance, 'Exception::Chain');
 }
 
 sub dumper {
