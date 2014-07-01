@@ -3,7 +3,7 @@ use 5.008005;
 use strict;
 use warnings;
 use overload
-    "\"\"" => \&to_string;
+    '""' => sub { $_[0]->to_string || $_[0] };
 
 use Class::Accessor::Lite (
     ro => [qw/ delivery is_delivery_duplicated duplicated_trace /],
