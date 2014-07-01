@@ -198,6 +198,19 @@ subtest 'skip level' => sub {
     };
 };
 
+subtest 'add message' => sub {
+    eval {
+        Exception::Chain->throw(
+            message  => 'dbname=user is connection failed',
+        );
+    };
+    if (my $e = $@) {
+        $e->add_message('add message');
+        note explain $e->to_string;
+        like $e->to_string, qr{\Adbname=user is connection failed at t.simple\.t line \d+\. add message at t.simple\.t line \d+\.\z};
+    }
+};
+
 done_testing;
 
 
