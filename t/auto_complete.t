@@ -99,4 +99,15 @@ subtest 'chained instance' => sub {
     is $e->match('user_error'), 1;
 };
 
+subtest 'no message' => sub {
+    eval {
+        my $ret = Exception::Chain->throw(
+            tag => ['invalid_request'],
+        );
+    };
+    if (my $e = $@) {
+        is ref $e, 'Exception::Chain';
+    }
+};
+
 done_testing;
