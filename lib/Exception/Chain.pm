@@ -230,7 +230,7 @@ store a following value.
 
 =item message ($info{message})
 
-=item delivery ($info{delivery}). it's stored only once.
+=item delivery ($info{delivery})
 
 =back
 
