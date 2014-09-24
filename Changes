@@ -2,6 +2,10 @@ Revision history for Perl extension Exception-Chain
 
 {{$NEXT}}
 
+0.11 2014-09-24T14:13:49Z
+    - delete dependent module
+    - change delivery logic (losing backward compatibility)
+
 0.10 2014-07-01T12:49:11Z
     - add method [add_message]
     - bugfix [instance decision logic]

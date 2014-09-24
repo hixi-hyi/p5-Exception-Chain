@@ -11,7 +11,7 @@ use Class::Accessor::Lite (
 use Data::Dumper;
 use Data::Util qw(is_instance);
 
-our $VERSION   = "0.10";
+our $VERSION   = "0.11";
 our $SkipDepth = 0;
 
 sub new {

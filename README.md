@@ -67,7 +67,7 @@ store a following value.
 
 - tag ($info{tag})
 - message ($info{message})
-- delivery ($info{delivery}). it's stored only once.
+- delivery ($info{delivery})
 
     throw($e); # Exception::Chain instance or message
     throw(
@@ -108,16 +108,6 @@ matching stored tag.
 ## delivery
 
 delivered object. (or scalar object)
-
-## is\_delivery\_duplicated
-
-(it's development tool)
-if delivery was duplicated, 1;
-
-## duplicated\_trace
-
-(it's development tool)
-description of the occured file and line.
 
 # GLOBAL VARIABLES
 
