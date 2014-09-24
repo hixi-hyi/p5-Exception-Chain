@@ -1,7 +1,5 @@
 requires 'perl', '5.008001';
 requires 'Class::Accessor::Lite';
-requires 'Time::Piece';
-requires 'Time::HiRes';
 requires 'Data::Dumper';
 requires 'Data::Util';
 
