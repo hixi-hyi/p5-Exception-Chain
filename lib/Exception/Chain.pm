@@ -8,8 +8,6 @@ use overload
 use Class::Accessor::Lite (
     ro => [qw/ delivery /],
 );
-use Time::Piece qw(localtime);
-use Time::HiRes qw(gettimeofday tv_interval);
 use Data::Dumper;
 use Data::Util qw(is_instance);
 
