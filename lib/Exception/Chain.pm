@@ -6,7 +6,7 @@ use overload
     '""' => sub { $_[0]->to_string || $_[0] };
 
 use Class::Accessor::Lite (
-    ro => [qw/ delivery is_delivery_duplicated duplicated_trace /],
+    ro => [qw/ delivery /],
 );
 use Time::Piece qw(localtime);
 use Time::HiRes qw(gettimeofday tv_interval);
@@ -16,21 +16,18 @@ use Data::Util qw(is_instance);
 our $VERSION   = "0.10";
 our $SkipDepth = 0;
 
-# class method
 sub new {
     my ($class, %args) = @_;
 
     my $self = bless {
-        tags                   => {},
-        stack                  => [],
-        message                => undef,
-        delivery               => undef,
-        is_delivery_duplicated => 0,
-        duplicated_trace       => [],
+        tags     => {},
+        stack    => [],
+        message  => undef,
+        delivery => undef,
     }, $class;
 }
 
-sub _get_external_caller {
+sub _target_caller {
     my $class = shift;
     my $i = 0;
     while (my @caller = caller(++$i)) {
@@ -85,8 +82,6 @@ sub dumper {
     return $value;
 }
 
-# instance method
-
 sub throw {
     my ($class, @args) = @_;
     my $builded_args = $class->_build_arg(@args);
@@ -138,7 +133,7 @@ sub add_message {
 sub logging {
     my ($self, $args) = @_;
 
-    my ($pkg, $file, $line) = $self->_get_external_caller;
+    my ($pkg, $file, $line) = $self->_target_caller;
 
     if (%{$args}) {
         if (my $tags = $args->{tag}) {
@@ -151,16 +146,7 @@ sub logging {
             push @{$self->{stack}}, "$message at $file line $line.";
         }
         if (my $delivery = $args->{delivery}) {
-            if ($self->delivery) {
-                unless ($self->is_delivery_duplicated) {
-                    $self->{is_delivery_duplicated} = 1;
-                    push @{$self->{duplicated_trace}}, $self->{stack}->[0];
-                }
-                push @{$self->{duplicated_trace}}, "$file line $line." ;
-            }
-            else {
-                $self->{delivery} = $delivery;
-            }
+            $self->{delivery} = $delivery;
         }
     }
     else {
@@ -289,16 +275,6 @@ matching stored tag.
 =head2 delivery
 
 delivered object. (or scalar object)
-
-=head2 is_delivery_duplicated
-
-(it's development tool)
-if delivery was duplicated, 1;
-
-=head2 duplicated_trace
-
-(it's development tool)
-description of the occured file and line.
 
 =head1 GLOBAL VARIABLES
 

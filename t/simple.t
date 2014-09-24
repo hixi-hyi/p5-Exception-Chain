@@ -137,7 +137,7 @@ subtest 'throw object' => sub {
     is $e->delivery->{msg},  'internal server error';
 };
 
-subtest 'not override object' => sub {
+subtest 'override object' => sub {
     throws_ok {
         eval {
             Exception::Chain->throw(
@@ -153,11 +153,8 @@ subtest 'not override object' => sub {
         }
     } 'Exception::Chain', 'throws ok';
     my $e = $@;
-    is $e->delivery->{code}, 500;
-    is $e->delivery->{msg},  'internal server error';
-    is $e->is_delivery_duplicated, 1;
-    is scalar @{$e->duplicated_trace}, 2;
-    note explain $e->duplicated_trace;
+    is $e->delivery->{code}, 400;
+    is $e->delivery->{msg},  'override';
 };
 
 subtest 'delivery on the occasion of chain' => sub {
